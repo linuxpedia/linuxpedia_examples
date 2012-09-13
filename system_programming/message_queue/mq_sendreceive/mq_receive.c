@@ -24,10 +24,6 @@
 #include <mqueue.h>
 
 #define MQ_NAME "/mqlinuxpedia"
-#define MQ_MESSAGE_DATA "hello world"
-#define MQ_MESSAGE_LENGTH 12
-#define MQ_MESSAGE_PRIORITY 0
-
 #define MQ_MESSAGE_MAX_LENGTH 100
 #define MQ_MAX_NUM_OF_MESSAGES 10
 #define MQ_MODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
@@ -61,8 +57,8 @@ int main()
 		else
 		{
 			msg_buff[MQ_MESSAGE_MAX_LENGTH-1] = '\0';
-			printf("   Successfully received %d bytes\n", (int)msg_len);
-			printf("   Message : %s \n", msg_buff);
+			printf(" Successfully received %d bytes\n", (int)msg_len);
+			printf(" Message : %s \n", msg_buff);
 		}
 		
 		/* Close the message queue */
