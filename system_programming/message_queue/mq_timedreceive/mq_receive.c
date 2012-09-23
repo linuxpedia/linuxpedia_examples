@@ -42,8 +42,9 @@ int main()
 	char msg_buff[MQ_MESSAGE_MAX_LENGTH];
 	ssize_t msg_len;
 	unsigned msg_prio;
-	struct timespec currenttime;
+	struct timespec currenttime_before;
 	struct timespec abs_timeout;
+	struct timespec currenttime_after;
 
 	/* Form the queue attributes */
 	attr.mq_flags = 0; /* i.e mq_send will be block if message queue is full */
@@ -60,17 +61,16 @@ int main()
 				(MQ_RECEIVE_TIMEOUT / 1000000), (MQ_RECEIVE_TIMEOUT % 1000000));
 		for(;;)
 		{
-			/* get the current time. i.e time since the Epoch time, 
-			 * 1970-01-01 00:00:00 +0000 (UTC) */
-			clock_gettime( CLOCK_REALTIME, &currenttime);
-			mq_printf(" Current Time : %ld sec, %ld nanosec \n", currenttime.tv_sec, currenttime.tv_nsec);
+			mq_printf(" Receiving message .... \n");
+
+			/* get the current time at which mq_receive() is going to be called
+			   i.e time since the Epoch time, 1970-01-01 00:00:00 +0000 (UTC) */
+			clock_gettime( CLOCK_REALTIME, &currenttime_before);
 
 			/* Calculate the time out value for message receive */
-			abs_timeout.tv_sec = currenttime.tv_sec + (MQ_RECEIVE_TIMEOUT / 1000000);
-			abs_timeout.tv_nsec = currenttime.tv_nsec + (MQ_RECEIVE_TIMEOUT % 1000000);
-			mq_printf(" Timeout Time : %ld sec, %ld nanosec \n", abs_timeout.tv_sec, abs_timeout.tv_nsec);
+			abs_timeout.tv_sec = currenttime_before.tv_sec + (MQ_RECEIVE_TIMEOUT / 1000000);
+			abs_timeout.tv_nsec = currenttime_before.tv_nsec + (MQ_RECEIVE_TIMEOUT % 1000000);
 
-			mq_printf(" Receiving message .... \n");
 			/**********************************************************************************
 			*
 			*  #include <time.h>
@@ -110,13 +110,23 @@ int main()
 			***********************************************************************************/
 			msg_len = mq_timedreceive (mqdes, msg_buff, MQ_MESSAGE_MAX_LENGTH, &msg_prio, &abs_timeout);
 
+			/* Get the time at which the message queue returns */
+			clock_gettime( CLOCK_REALTIME, &currenttime_after);
+
+			/* Print all time values. We didn't print anything before to avoid the delay caused by printf() */
+			mq_printf(" Time at which mq_timedreceive is called : %ld sec, %ld nanosec \n", 
+						currenttime_before.tv_sec, currenttime_before.tv_nsec);
+			mq_printf(" Timeout value passed to mq_timedreceive : %ld sec, %ld nanosec \n", 
+						abs_timeout.tv_sec, abs_timeout.tv_nsec);
+			mq_printf(" Time at which mq_timedreceive returned  : %ld sec, %ld nanosec \n", 
+						currenttime_after.tv_sec, currenttime_after.tv_nsec);
+
 			if(msg_len < 0)
 			{
+				/* mq_timedreceive returned with an error */
 				if(errno == ETIMEDOUT)
 				{
-					clock_gettime( CLOCK_REALTIME, &currenttime);
-					mq_printf(" Message recieve timedout at %ld sec, %ld nanosec \n\n", 
-							currenttime.tv_sec, currenttime.tv_nsec);
+					mq_printf(" Message recieve timed out ! \n\n"); 
 				}
 				else
 				{
@@ -126,8 +136,12 @@ int main()
 			}
 			else
 			{
-				msg_buff[MQ_MESSAGE_MAX_LENGTH-1] = '\0';
+				/* We got a message */
 				mq_printf(" Successfully received %d bytes\n", (int)msg_len);
+
+				/* Print the received message */
+				/* Ensure the buffer is null terminated before printing it */
+				msg_buff[MQ_MESSAGE_MAX_LENGTH-1] = '\0';
 				mq_printf(" Message  : %s \n", msg_buff);
 				mq_printf(" Priority : %d \n", msg_prio);
 				break;

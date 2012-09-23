@@ -26,8 +26,6 @@
 #include <string.h>
 
 #define MQ_NAME "/mqlinuxpedia"
-#define MQ_MESSAGE_DATA "hello world"
-#define MQ_MESSAGE_LENGTH 12
 #define MQ_MESSAGE_PRIORITY 0
 
 #define mq_printf(str, arg...) printf("%d : "str, getpid(), ##arg)
@@ -59,7 +57,7 @@ int main (int argc, char ** argv)
 		if(ret)
 			perror("Failed");
 		else
-			mq_printf("Done\n");
+			printf("Done\n");
 		
 		/* Close the message queue */
 		ret = mq_close(mqd);
