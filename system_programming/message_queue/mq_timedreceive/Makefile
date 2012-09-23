@@ -1,6 +1,8 @@
 #
 #  This program explains POSIX Message Queue APIs
 #
+#  http://www.linuxpedia.org/index.php?title=Linux_System_Programming_:_POSIX_Message_Queue
+#
 #  Copyright (C) 2012  LinuxPedia.org (anoojgopi@linuxpedia.org)
 #
 #  This program is free software: you can redistribute it and/or modify
