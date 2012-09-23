@@ -20,3 +20,6 @@ int del_timer(struct timer_list * timer);
 Example-1
 Basic Kernel timer implementation program
 k_timer1.c
+
+Example-2
+k_timer1.c

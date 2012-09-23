@@ -1,4 +1,4 @@
-obj-m +=k_timer1.o
+obj-m +=k_timer1.o k_timer2.o
 KDIR= /lib/modules/$(shell uname -r)/build
 all:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
