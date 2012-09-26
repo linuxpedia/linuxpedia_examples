@@ -1,0 +1,94 @@
+Linux Kernel Timer API list
+
+The kernel provides drivers with a number of functions to declare, register, 
+and remove kernel timers. The following excerpt shows the basic building blocks:
+
+#include <linux/timer.h>
+struct timer_list {
+        /* ... */
+        unsigned long expires;
+        void (*function)(unsigned long);
+        unsigned long data;
+};
+
+void init_timer(struct timer_list *timer);
+struct timer_list TIMER_INITIALIZER(_function, _expires, _data);
+
+void add_timer(struct timer_list * timer);
+int del_timer(struct timer_list * timer);
+
+Example-1
+Basic Kernel timer implementation program
+k_timer1.c
+
+Code Walf Through
+
+init_module() - called when insmod command is executed
+
+	setup_timer(&my_timer, my_timer_callback, 0)  - setting the timer and timer function
+	
+	mod_timer(&my_timer, jiffies + msecs_to_jiffies(200)) - timer trigger interval 
+
+cleanup_module() - called when rmmod command is executed
+
+	del_timer(&my_timer) - delete the timer event
+
+my_timer_function()
+
+	called when mod_timer function timer expires
+
+___________________________________________________________________________________________________________________________
+Example-2
+k_timer1.c
+
+Code Walk Through
+-----------------
+
+module_init(my_timer_init)
+
+	module init function to be called when insmod command is executed
+	
+module_exit(my_timer_exit)
+
+	module exit function when rmmod command is issued
+
+static int __init my_timer_init(void) - my_timer_init function definition
+	
+    init_timer(&my_timer) - initialize the timer and set the timer function 
+
+    my_timer.function=my_timer_func - timer function to be called when the timer event occurs
+	
+    mod_timer(&my_timer, jiffies + timeout * HZ )  - first timer event function
+
+static void __exit my_timer_exit(void)  - module deregister routine 
+
+	del_timer_sync(&my_timer) -- delete the next timer event
+
+static void my_timer_func(unsigned long arg)
+
+	timer function called when timer expires
+	
+	using this we can re enable the timer and wait for it to get expiry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
