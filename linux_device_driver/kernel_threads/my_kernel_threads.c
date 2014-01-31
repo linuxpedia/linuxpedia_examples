@@ -1,7 +1,7 @@
 /*
- *  This program explains POSIX Message Queue APIs
+ *  This program explains Linux Kernel Threads
  *
- *  http://www.linuxpedia.org/index.php?title=Linux_Character_Driver
+ *  http://www.linuxpedia.org/index.php?title=Linux_Kernel_Threads
  *
  *  Copyright (C) 2012  LinuxPedia.org (anoojgopi@linuxpedia.org)
  *
